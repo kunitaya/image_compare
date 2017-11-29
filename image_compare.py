@@ -24,8 +24,11 @@ def compare_image():
 
         try:
             (score, diff) = compare_ssim(imageA, imageB, full=True, multichannel=True)
+        except ValueError as e:
+            print(path[i] + ": " + e)
+            continue
         except:
-            print("Unexpected error:", sys.exc_info()[0])
+            print(path[i] + ": " + "Unexpected error: ", sys.exc_info()[0])
             continue
 
         diff = (diff * 255).astype("uint8")
@@ -57,7 +60,7 @@ def compare_image():
 absdir = os.path.dirname(os.path.abspath(__file__))
 filesA = filter(lambda f:os.path.isfile(f), find_all_files(os.path.join(absdir, header_A)))
 mapA = map(lambda s:s.replace(os.path.join(absdir, header_A) + os.sep, ''),filesA)
-filesB = filter(lambda f:os.path.isfile(f), find_all_files(os.path.join(absdir, header_B))):
+filesB = filter(lambda f:os.path.isfile(f), find_all_files(os.path.join(absdir, header_B)))
 mapB = map(lambda s:s.replace(os.path.join(absdir, header_B) + os.sep, ''),filesB)
 
 path = list(set(list(mapA)) & set(list(mapB)))
