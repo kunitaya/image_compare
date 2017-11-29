@@ -19,13 +19,18 @@ def compare_image():
     for i in range(len(path)):
         fileA = os.path.join(os.path.dirname(os.path.abspath(__file__)), header_A, path[i])
         fileB = os.path.join(os.path.dirname(os.path.abspath(__file__)), header_B, path[i])
+        pathC = os.path.dirname(os.path.join(os.path.dirname(os.path.abspath(__file__)), header_C, path[i]))
+
+        if not os.path.exists(pathC): os.makedirs(pathC)
+
         imageA = cv2.imread(fileA, 0)
         imageB = cv2.imread(fileB, 0)
 
         try:
             (score, diff) = compare_ssim(imageA, imageB, full=True, multichannel=True)
         except ValueError as e:
-            print(path[i] + ": " + e)
+            print(path[i] + ": ZeroDivisionError")
+            text_file.write(path[i] + ": ZeroDivisionError")
             continue
         except:
             print(path[i] + ": " + "Unexpected error: ", sys.exc_info()[0])
@@ -44,15 +49,19 @@ def compare_image():
 
         if score < 0:
             percent = ((score * 100) / 2) - 50
+            text_file.write(fileA + ', ' + fileB + ', ' + "Similarity: %s" % percent + """%""" + "\n")
+
         else:
             percent = round(((score * 100) / 2) + 50, 2)
-            fie = os.path.join(header_A + path[i] + '\\a.png\n', header_B + path[i] + '\\a.png\n')
-            text_file.write(header_A + path[i] + '\\a.png, '
-                            + header_B + path[i] + '\\a.png, '
-                            + "Similarity: %s" % percent + """%""" + "\n")
+            #fie = os.path.join(header_A + path[i] + '\\a.png\n', header_B + path[i] + '\\a.png\n')
+            #text_file.write(header_A + path[i] + '\\a.png, '
+            #                + header_B + path[i] + '\\a.png, '
+            #                + "Similarity: %s" % percent + """%""" + "\n")
+            text_file.write(fileA + ', ' + fileB + ', ' + "Similarity: %s" % percent + """%""" + "\n")
 
-        cv2.imwrite(os.path.join(os.path.join(header_C + path[i]), 'check-result-20171005233158.png'), imageA)
-        cv2.imwrite(os.path.join(os.path.join(header_C + path[i]), 'check-result-20171016144416.png'), imageB)
+
+        cv2.imwrite(os.path.join(pathC, header_A + '.png'), imageA)
+        cv2.imwrite(os.path.join(pathC, header_B + '.png'), imageB)
         cv2.waitKey(0)
         print(path[i])
     text_file.close()
