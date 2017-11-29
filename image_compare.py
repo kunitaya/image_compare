@@ -25,7 +25,12 @@ def compare_image():
         #grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
 
         #(score, diff) = compare_ssim(grayA, grayB, full=True, multichannel=True)
-        (score, diff) = compare_ssim(imageA, imageB, full=True, multichannel=True)
+        try:
+            (score, diff) = compare_ssim(imageA, imageB, full=True, multichannel=True)
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            continue
+
         diff = (diff * 255).astype("uint8")
 
         thresh = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
