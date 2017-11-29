@@ -23,11 +23,13 @@ def compare_image():
 
         if not os.path.exists(pathC): os.makedirs(pathC)
 
-        imageA = cv2.imread(fileA, 0)
-        imageB = cv2.imread(fileB, 0)
+        imageA = cv2.imread(fileA, 1)
+        imageB = cv2.imread(fileB, 1)
+        grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
 
         try:
-            (score, diff) = compare_ssim(imageA, imageB, full=True, multichannel=True)
+            (score, diff) = compare_ssim(grayA, grayB, full=True, multichannel=True)
         except ValueError as e:
             print(path[i] + ": ZeroDivisionError")
             text_file.write(path[i] + ": ZeroDivisionError")
