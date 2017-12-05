@@ -62,10 +62,6 @@ def compare_image(str_path):
 
     else:
         percent = round(((score * 100) / 2) + 50, 2)
-        #fie = os.path.join(header_A + str_path + '\\a.png\n', header_B + str_path + '\\a.png\n')
-        #logfile.write(header_A + str_path + '\\a.png, '
-        #                + header_B + str_path + '\\a.png, '
-        #                + "Similarity: %s" % percent + """%""" + "\n")
         logger.debug(fileA + ', ' + fileB + ', ' + "Similarity: {0}%".format(percent))
 
     cv2.imwrite(os.path.join(pathC, header_A + '.png'), imageA)
@@ -78,7 +74,7 @@ mapA = map(lambda s:s.replace(os.path.join(absdir, header_A) + os.sep, ''),files
 filesB = filter(lambda f:os.path.isfile(f), find_all_files(os.path.join(absdir, header_B)))
 mapB = map(lambda s:s.replace(os.path.join(absdir, header_B) + os.sep, ''),filesB)
 
-path = list(set(list(mapA)) & set(list(mapB)))
+path = list(set(mapA) & set(mapB))
 
 if __name__ == '__main__':
     list(map(compare_image, path))
