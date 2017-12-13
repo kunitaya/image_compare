@@ -18,19 +18,26 @@ header_A = 'after'
 header_B = 'before'
 header_C = 'compare'
 
+# Output all paths under the directory.
+# arguments
+#   directory: Origin directory
 def find_all_files(directory = os.path.abspath(__file__)):
     for root, dirs, files in os.walk(directory):
         yield root
         for file in files:
             yield os.path.join(root, file)
 
+# Compare images
 def compare_image(str_path):
+    # get filepath.
     fileA = os.path.join(os.path.dirname(os.path.abspath(__file__)), header_A, str_path)
     fileB = os.path.join(os.path.dirname(os.path.abspath(__file__)), header_B, str_path)
     pathC = os.path.dirname(os.path.join(os.path.dirname(os.path.abspath(__file__)), header_C, str_path))
 
+    # create output directory.
     if not os.path.exists(pathC): os.makedirs(pathC)
 
+    # get images.
     imageA = cv2.imread(fileA, 1)
     imageB = cv2.imread(fileB, 1)
     heightA, widthA = imageA.shape[:2]
@@ -38,10 +45,12 @@ def compare_image(str_path):
     height = min(heightA, heightB)
     width = min(widthA, widthB)
 
+    # Change to grayscale & align height/width that files
     grayA = cv2.cvtColor(imageA[0:height, 0:width], cv2.COLOR_BGR2GRAY)
     grayB = cv2.cvtColor(imageB[0:height, 0:width], cv2.COLOR_BGR2GRAY)
 
     try:
+        # compare images
         (score, diff) = compare_ssim(grayA, grayB, full=True, multichannel=True)
         diff = (diff * 255).astype("uint8")
 
@@ -52,6 +61,7 @@ def compare_image(str_path):
         logger.debug(str_path + ": " + "Unexpected error: ", sys.exc_info()[0])
         return 0
 
+    # Added marking to differences
     thresh = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
     cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if imutils.is_cv2() else cnts[1]
