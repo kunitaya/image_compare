@@ -33,15 +33,20 @@ def compare_image(str_path):
 
     imageA = cv2.imread(fileA, 1)
     imageB = cv2.imread(fileB, 1)
-    grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
-    grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+    heightA, widthA = imageA.shape[:2]
+    heightB, widthB = imageB.shape[:2]
+    height = min(heightA, heightB)
+    width = min(widthA, widthB)
+
+    grayA = cv2.cvtColor(imageA[0:height, 0:width], cv2.COLOR_BGR2GRAY)
+    grayB = cv2.cvtColor(imageB[0:height, 0:width], cv2.COLOR_BGR2GRAY)
 
     try:
         (score, diff) = compare_ssim(grayA, grayB, full=True, multichannel=True)
         diff = (diff * 255).astype("uint8")
 
     except ValueError as e:
-        logger.debug(str_path + ": ZeroDivisionError")
+        logger.debug(str_path + ": ValueError({0})".format(e))
         return 0
     except:
         logger.debug(str_path + ": " + "Unexpected error: ", sys.exc_info()[0])
